@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>rythudeepa | Smart Farming Ecosystem</title>
+  
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* --- 1. RESET & VARIABLES --- */
+    :root {
+      --primary: #1b5e20; /* Deep Green */
+      --secondary: #4caf50; /* Fresh Green */
+      --accent: #f9a825; /* Harvest Gold */
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --text-main: #2d3436;
+      --text-muted: #636e72;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* --- 2. LAYOUT & UTILITIES --- */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .hidden { display: none !important; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; font-size: 1rem; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background-color: #144418; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(27, 94, 32, 0.3); }
+    .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+    .btn-outline:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+    .btn-accent { background: var(--accent); color: #000; }
+    .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+    
+    /* --- 3. PRICE TICKER --- */
+    .price-ticker { background: #263238; color: white; padding: 10px 0; overflow: hidden; white-space: nowrap; font-size: 14px; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .ticker-content { display: inline-block; animation: scroll 25s linear infinite; }
+    .ticker-item { display: inline-block; margin-right: 50px; }
+    .ticker-item span { color: var(--accent); font-weight: bold; margin-left: 5px; }
+    @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+
+    /* --- 4. NAVIGATION --- */
+    .navbar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; padding: 15px 0; }
+    .nav-content { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 24px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .nav-links { display: flex; gap: 25px; align-items: center; }
+    .nav-item { color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 0.95rem; padding: 8px 0; border-bottom: 2px solid transparent; transition: all 0.2s; cursor: pointer; }
+    .nav-item:hover, .nav-item.active { color: var(--primary); border-bottom-color: var(--primary); }
+    
+    /* --- 5. SECTIONS & CARDS --- */
+    section { padding: 40px 0; min-height: 80vh; animation: fadeIn 0.4s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PROFESSIONAL HERO SECTION */
+    .hero-wrapper {
+      background: linear-gradient(rgba(0, 30, 0, 0.7), rgba(0, 30, 0, 0.6)), url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      padding: 120px 0 160px; /* Extra bottom padding for stats overlap */
+      text-align: center;
+      position: relative;
+    }
+    .hero-title { font-size: 4rem; font-weight: 800; margin-bottom: 20px; line-height: 1.1; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    .hero-subtitle { font-size: 1.4rem; color: #e0e0e0; max-width: 750px; margin: 0 auto 40px; font-weight: 400; }
+    
+    /* Floating Stats Bar */
+    .stats-bar {
+      margin-top: -80px; /* Pull up to overlap hero */
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 30px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      position: relative;
+      z-index: 10;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .stat-item { text-align: center; border-right: 1px solid #eee; }
+    .stat-item:last-child { border-right: none; }
+    .stat-number { font-size: 2.5rem; font-weight: 800; color: var(--primary); display: block; margin-bottom: 5px; }
+    .stat-label { font-size: 1rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Features Grid (Updated) */
+    .features-section { padding: 80px 0; background: var(--bg); }
+    .section-header { text-align: center; margin-bottom: 60px; }
+    .section-header h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; }
+    .section-header p { color: var(--text-muted); font-size: 1.1rem; }
+
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+    .feature-card { background: var(--surface); padding: 40px 30px; border-radius: 16px; box-shadow: var(--shadow); text-align: left; transition: all 0.3s; border: 1px solid transparent; }
+    .feature-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-color: var(--secondary); }
+    .feature-icon-wrapper { width: 60px; height: 60px; background: #e8f5e9; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--primary); }
+    .feature-card h3 { font-size: 1.4rem; margin-bottom: 10px; color: var(--text-main); }
+    .feature-card p { color: var(--text-muted); line-height: 1.6; }
+
+    /* How It Works Section */
+    .how-it-works { background: white; padding: 80px 0; text-align: center; }
+    .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-top: 50px; }
+    .step-card { position: relative; }
+    .step-number { width: 50px; height: 50px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: white; margin: 0 auto 20px; box-shadow: 0 4px 10px rgba(249, 168, 37, 0.4); }
+    
+    /* Footer */
+    .site-footer { background: #1a202c; color: white; padding: 60px 0 20px; margin-top: auto; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px; }
+    .footer-col h3 { font-size: 1.2rem; margin-bottom: 20px; color: var(--secondary); }
+    .footer-links { list-style: none; padding: 0; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { color: #a0aec0; text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: white; }
+    .copyright { border-top: 1px solid #2d3748; padding-top: 20px; text-align: center; color: #718096; font-size: 0.9rem; }
+
+    /* Forms & Inputs */
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-main); }
+    .form-input, .form-select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.2s; background: white; }
+    .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); }
+
+    /* Dashboard Layouts */
+    .dashboard-grid { display: grid; grid-template-columns: 250px 1fr; gap: 30px; }
+    .sidebar { background: var(--surface); padding: 20px; border-radius: 12px; box-shadow: var(--shadow); height: fit-content; }
+    .main-panel { background: var(--surface); padding: 30px; border-radius: 12px; box-shadow: var(--shadow); }
+
+    /* Weather & Stats */
+    .weather-widget { background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+    .weather-info h2 { font-size: 2.5rem; margin: 0; }
+    .stat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: #f1f8e9; padding: 20px; border-radius: 10px; border-left: 4px solid var(--primary); }
+    
+    /* Market Grid */
+    .market-controls { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; background: white; padding: 20px; border-radius: 12px; box-shadow: var(--shadow); }
+    .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
+    .product-card { border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: white; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+    .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+    .product-img { height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; color: #888; overflow: hidden; }
+    .product-img img { width: 100%; height: 100%; object-fit: cover; }
+    .product-details { padding: 15px; }
+    .price-tag { color: var(--primary); font-weight: 800; font-size: 1.2rem; display: block; margin-top: 5px; }
+    .location-tag { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; margin-bottom: 5px; }
+
+    /* COMMUNITY & FARMER NETWORK STYLES */
+    .community-tabs { display: flex; gap: 20px; border-bottom: 1px solid #eee; margin-bottom: 30px; }
+    .community-tab { padding: 10px 0; cursor: pointer; color: var(--text-muted); font-weight: 600; border-bottom: 3px solid transparent; }
+    .community-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    
+    .farmer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+    .farmer-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 25px; text-align: center; transition: all 0.2s; box-shadow: var(--shadow); }
+    .farmer-card:hover { transform: translateY(-5px); }
+    .farmer-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px; border: 2px solid var(--primary); }
+    .farmer-name { font-weight: 700; font-size: 1.1rem; margin-bottom: 5px; }
+    .farmer-meta { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; }
+    
+    .forum-feed { display: flex; flex-direction: column; gap: 20px; }
+    .forum-post { background: white; padding: 20px; border-radius: 12px; border: 1px solid #eee; }
+    .post-header { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: flex-start; }
+    .post-author { font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .post-time { font-size: 0.8rem; color: var(--text-muted); }
+    .post-content { color: var(--text-main); line-height: 1.5; margin-bottom: 15px; }
+    .post-actions { display: flex; gap: 20px; color: var(--text-muted); font-size: 0.9rem; }
+    .action-btn { cursor: pointer; display: flex; align-items: center; gap: 5px; }
+    .action-btn:hover { color: var(--primary); }
+
+    /* Profile Styles */
+    .profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+    .profile-pic { width: 100px; height: 100px; border-radius: 50%; background: #e0e0e0; object-fit: cover; border: 3px solid var(--primary); }
+    .profile-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+    .stat-box { background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; }
+
+    /* --- 6. MODALS & BOT --- */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-box { background: white; width: 400px; padding: 30px; border-radius: 16px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    
+    /* Bot Styles */
+    #bot-toggler { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(27, 94, 32, 0.4); z-index: 2000; transition: transform 0.3s; display: flex; align-items: center; justify-content: center; }
+    #bot-toggler:hover { transform: scale(1.1); }
+    #chat-window { position: fixed; bottom: 100px; right: 30px; width: 360px; height: 550px; background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 2000; display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); }
+    .chat-header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .chat-body { flex: 1; overflow-y: auto; padding: 20px; background: #f5f7f5; display: flex; flex-direction: column; gap: 15px; }
+    .chat-msg { max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+    .chat-msg.bot { background: white; border-bottom-left-radius: 4px; border: 1px solid #e0e0e0; }
+    .chat-msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .chat-footer { padding: 15px; background: white; border-top: 1px solid #eee; display: flex; gap: 10px; }
+    .chat-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none; }
+    .mic-listening { animation: pulse-red 1.5s infinite; color: #d32f2f !important; }
+    @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+  </style>
+</head>
+<body>
+
+  <!-- ================= PRICE TICKER ================= -->
+  <div class="price-ticker">
+    <div class="ticker-content">
+      <div class="ticker-item">🌾 <span data-lang="tick_paddy">AP Paddy</span>: <span>₹2,183/q</span></div>
+      <div class="ticker-item">☁️ <span data-lang="tick_cotton">Gujarat Cotton</span>: <span>₹6,380/q</span></div>
+      <div class="ticker-item">🌶 <span data-lang="tick_chilli">Guntur Chilli</span>: <span>₹18,500/q</span></div>
+      <div class="ticker-item">🍎 <span data-lang="tick_apple">Kashmir Apple</span>: <span>₹8,000/q</span></div>
+      <div class="ticker-item">🧅 <span data-lang="tick_onion">Nashik Onion</span>: <span>₹2,200/q</span></div>
+      <div class="ticker-item">🥜 <span data-lang="tick_ground">Rajkot Groundnut</span>: <span>₹5,850/q</span></div>
+    </div>
+  </div>
+
+  <!-- ================= NAVIGATION ================= -->
+  <nav class="navbar">
+    <div class="container nav-content">
+      <a href="#" class="logo" onclick="navigateTo('home')">
+        <i data-lucide="sprout"></i> Rythudeepa
+      </a>
+      
+      <div class="nav-links">
+        <a class="nav-item active" onclick="navigateTo('home')" data-lang="nav_home">Home</a>
+        <a class="nav-item" onclick="navigateTo('tools')" data-lang="nav_tools">Smart Tools</a>
+        <a class="nav-item" onclick="navigateTo('community')" data-lang="nav_community">Community</a>
+        <a class="nav-item" onclick="navigateTo('experts')" data-lang="nav_experts">Experts</a>
+        <a class="nav-item" onclick="navigateTo('marketplace')" data-lang="nav_market">India Market</a>
+        
+        <!-- Logged In Links -->
+        <a class="nav-item hidden" id="nav-dashboard" onclick="navigateTo('dashboard')" data-lang="nav_dash">Dashboard</a>
+        <a class="nav-item hidden" id="nav-profile" onclick="navigateTo('profile')" data-lang="nav_profile">Profile</a>
+        
+        <!-- Language Switch -->
+        <button class="btn btn-outline" style="padding: 5px 12px; font-size: 0.9rem;" onclick="toggleLanguage()" id="lang-btn">🇺🇸 EN</button>
+
+        <!-- Auth Actions -->
+        <div id="auth-actions" style="display: flex; gap: 10px;">
+          <button class="btn btn-outline" onclick="openAuthModal('login')" data-lang="btn_login">Login</button>
+          <button class="btn btn-primary" onclick="openAuthModal('register')" data-lang="btn_signup">Sign Up</button>
+        </div>
+        <div id="user-actions" class="hidden" style="display: flex; align-items: center; gap: 10px;">
+          <span id="user-greeting" style="font-weight: 600; color: var(--primary);"></span>
+          <button class="btn btn-outline" onclick="logout()" data-lang="btn_logout">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================= SECTIONS ================= -->
+
+  <!-- 1. HERO SECTION -->
+  <div id="section-home">
+    <div class="hero-wrapper">
+      <div class="container">
+        <h1 class="hero-title" data-lang="hero_title">Future of Farming<br>is Here</h1>
+        <p class="hero-subtitle" data-lang="hero_sub">Empowering 50,000+ Indian farmers with AI Disease Detection, Smart Market Prices, and Expert Connectivity.</p>
+        
+        <div style="display: flex; gap: 20px; justify-content: center;">
+          <button class="btn btn-primary" style="padding: 15px 40px; font-size: 1.1rem;" onclick="navigateTo('tools')" data-lang="btn_try_tools">Start Farming Smart</button>
+          <button class="btn btn-outline" style="padding: 15px 40px; font-size: 1.1rem; color: white; border-color: white;" onclick="navigateTo('marketplace')" data-lang="btn_find_expert">Explore Market</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Stats Bar -->
+    <div class="container">
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-number">50K+</span>
+          <span class="stat-label" data-lang="stat_farmers">Farmers Connected</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">100+</span>
+          <span class="stat-label" data-lang="stat_experts">Agri Experts</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">12</span>
+          <span class="stat-label" data-lang="stat_states">Indian States</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="features-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 data-lang="why_title">Why Choose AgriTrace?</h2>
+          <p data-lang="why_sub">Comprehensive tools designed for the modern Indian farmer.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon-wrapper"><i data-lucide="scan-line" size="32"></i></div>
+            <h3 data-lang="feat_disease">AI Disease Detection</h3>
+            <p data-lang="feat_disease_desc">Instantly identify crop diseases by uploading a photo and get scientifically proven remedies.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper"><i data-lucide="trending-up" size="32"></i></div>
+            <h3 data-lang="feat_price">Market Price Prediction</h3>
+            <p data-lang="feat_price_desc">Know the future price of your harvest with our AI forecasting engine tailored for Indian Mandis.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper"><i data-lucide="map-pin" size="32"></i></div>
+            <h3 data-lang="feat_reach">Pan-India Reach</h3>
+            <p data-lang="feat_reach_desc">From Punjab's Wheat to Kerala's Spices, connect with buyers and sellers across the nation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="how-it-works">
+      <div class="container">
+        <div class="section-header">
+          <h2 data-lang="how_title">How AgriTrace Works</h2>
+          <p data-lang="how_sub">Simple steps to transform your farming journey.</p>
+        </div>
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3 data-lang="step1_title">Sign Up</h3>
+            <p data-lang="step1_desc">Create your free profile and add your farm details.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3 data-lang="step2_title">Use AI Tools</h3>
+            <p data-lang="step2_desc">Check soil health, detect diseases, and get weather alerts.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3 data-lang="step3_title">Grow & Sell</h3>
+            <p data-lang="step3_desc">Improve yield and sell directly in our marketplace.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. DASHBOARD -->
+  <section id="section-dashboard" class="container hidden">
+    <!-- Weather Widget -->
+    <div class="weather-widget">
+      <div class="weather-info">
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <i data-lucide="cloud-sun" size="48"></i>
+          <div><h2>28°C</h2><p data-lang="dash_loc">Your Location</p></div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 20px;">
+        <div style="background:rgba(255,255,255,0.2); padding:10px 20px; border-radius:8px;"><span data-lang="dash_hum">Humidity</span>: 65%</div>
+        <div style="background:rgba(255,255,255,0.2); padding:10px 20px; border-radius:8px;"><span data-lang="dash_rain">Rain</span>: 10%</div>
+      </div>
+    </div>
+    <!-- Stats -->
+    <div class="dashboard-grid">
+      <div class="sidebar">
+        <h3 data-lang="dash_menu">Menu</h3>
+        <ul style="list-style:none; padding:0; margin-top:15px;">
+          <li style="margin-bottom:10px; font-weight:bold; color:var(--primary);" data-lang="dash_over">Overview</li>
+          <li style="margin-bottom:10px; cursor:pointer;" data-lang="dash_soil">Soil Health</li>
+          <li style="margin-bottom:10px; cursor:pointer;" data-lang="dash_batch">My Batches</li>
+        </ul>
+      </div>
+      <div class="main-panel">
+        <h2 data-lang="dash_farm_over">Farm Overview</h2>
+        <div class="stat-cards">
+          <div class="stat-card"><div data-lang="dash_active">Active Crop</div><h3 style="color:var(--primary);">Paddy</h3></div>
+          <div class="stat-card"><div data-lang="dash_harvest">Next Harvest</div><h3 style="color:var(--primary);">20 Days</h3></div>
+          <div class="stat-card"><div data-lang="dash_income">Est. Income</div><h3 style="color:var(--primary);">₹1.2L</h3></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. SMART TOOLS -->
+  <section id="section-tools" class="container hidden">
+    <h2 data-lang="tools_title">Smart Farming Tools</h2>
+    <div class="main-panel">
+      <p class="text-muted" data-lang="tools_sub">Select a tool to begin.</p>
+      <div style="display: flex; gap: 15px; margin-top: 20px;">
+        <button class="btn btn-outline" onclick="alert('Disease Detection Tool Loaded')" data-lang="feat_disease">Disease Detection</button>
+        <button class="btn btn-outline" onclick="alert('Price Predictor Loaded')" data-lang="feat_price">Price Predictor</button>
+        <button class="btn btn-outline" onclick="alert('Fertilizer Calc Loaded')" data-lang="feat_fert">Fertilizer Calc</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. EXPERTS -->
+  <section id="section-experts" class="container hidden">
+    <h2 data-lang="nav_experts">Experts</h2>
+    <p data-lang="experts_desc">Connect with agriculture scientists.</p>
+  </section>
+
+  <!-- 5. MARKETPLACE -->
+  <section id="section-marketplace" class="container hidden">
+    <h2 style="margin-bottom: 20px;" data-lang="market_title">🇮🇳 All India Agriculture Market</h2>
+    
+    <!-- Market Filters -->
+    <div class="market-controls">
+      <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+        <label class="form-label" style="font-size: 12px;" data-lang="filter_state">Filter by State</label>
+        <select id="market-filter-state" class="form-select" onchange="renderMarket()">
+          <option value="All">All India</option>
+          <option value="Andhra Pradesh">Andhra Pradesh</option>
+          <option value="Telangana">Telangana</option>
+          <option value="Punjab">Punjab</option>
+          <option value="Maharashtra">Maharashtra</option>
+          <option value="Kashmir">J&K</option>
+          <option value="Kerala">Kerala</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+        <label class="form-label" style="font-size: 12px;" data-lang="filter_crop">Filter by Crop</label>
+        <select id="market-filter-crop" class="form-select" onchange="renderMarket()">
+          <option value="All">All Crops</option>
+          <option value="Paddy">Paddy (Rice)</option>
+          <option value="Wheat">Wheat</option>
+          <option value="Cotton">Cotton</option>
+          <option value="Spices">Spices</option>
+          <option value="Fruits">Fruits</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" style="align-self: flex-end;" onclick="renderMarket()" data-lang="btn_apply">Apply Filters</button>
+    </div>
+
+    <!-- Dynamic Grid -->
+    <div id="market-grid-container" class="market-grid">
+      <!-- Items will be injected by JS -->
+    </div>
+  </section>
+
+  <!-- NEW 7. COMMUNITY SECTION -->
+  <section id="section-community" class="container hidden">
+    <h2 style="margin-bottom: 20px;" data-lang="comm_title">Farmer Community Network</h2>
+    
+    <div class="community-tabs">
+      <div class="community-tab active" onclick="switchCommunityTab('network')" data-lang="tab_find">Find Farmers</div>
+      <div class="community-tab" onclick="switchCommunityTab('forum')" data-lang="tab_forum">Discussion Forum</div>
+    </div>
+
+    <!-- Tab 1: Farmer Network -->
+    <div id="tab-network">
+      <div class="market-controls" style="margin-bottom: 25px;">
+        <input type="text" class="form-input" placeholder="Search farmers..." data-lang-placeholder="search_ph" style="max-width: 300px;">
+        <button class="btn btn-primary" data-lang="btn_search">Search</button>
+      </div>
+      <div class="farmer-grid" id="farmer-grid-container">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- Tab 2: Discussion Forum -->
+    <div id="tab-forum" class="hidden">
+      <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: var(--shadow);">
+        <textarea class="form-input" rows="3" placeholder="Share a farming tip..." data-lang-placeholder="share_ph" style="margin-bottom: 10px;"></textarea>
+        <button class="btn btn-primary" data-lang="btn_post">Post Update</button>
+      </div>
+      <div class="forum-feed" id="forum-feed-container">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PROFILE SECTION -->
+  <section id="section-profile" class="container hidden">
+    <div class="main-panel" style="max-width: 700px; margin: 0 auto;">
+      <div class="profile-header">
+        <div style="position: relative;">
+          <img id="profile-img-display" src="" class="profile-pic" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div style="width: 100px; height: 100px; border-radius: 50%; background: #e0e0e0; display: none; align-items: center; justify-content: center; border: 3px solid var(--primary);">
+            <i data-lucide="user" size="40" color="#666"></i>
+          </div>
+          <button class="btn btn-primary" style="position: absolute; bottom: 0; right: -10px; padding: 5px; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;" onclick="document.getElementById('profile-upload').click()">
+            <i data-lucide="camera" size="14"></i>
+          </button>
+          <input type="file" id="profile-upload" hidden accept="image/*" onchange="uploadProfilePic(event)">
+        </div>
+        
+        <div style="flex: 1;">
+          <h2 id="profile-name-header" style="margin-bottom: 5px;">Farmer Name</h2>
+          <p class="text-muted" style="margin-bottom: 0;"><span data-lang="prof_verified">Verified Farmer</span> • <span id="profile-loc-header">India</span></p>
+        </div>
+      </div>
+
+      <form id="profile-form">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="form-group">
+            <label class="form-label" data-lang="prof_name">Full Name</label>
+            <input type="text" class="form-input" id="profile-farmName">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-lang="prof_loc">Location (State/District)</label>
+            <input type="text" class="form-input" id="profile-location">
+          </div>
+        </div>
+
+        <h3 style="margin-top: 20px; font-size: 1.1rem;" data-lang="prof_stats">My Farm Stats</h3>
+        <div class="profile-stats">
+          <div class="form-group">
+            <label class="form-label" data-lang="prof_land">Total Land (Acres)</label>
+            <input type="number" class="form-input" id="profile-acres" placeholder="e.g. 5">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-lang="prof_crop">Primary Crop</label>
+            <select class="form-select" id="profile-crop">
+              <option>Paddy</option>
+              <option>Cotton</option>
+              <option>Wheat</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;" data-lang="btn_save">Save Profile</button>
+        <p id="profile-msg" style="color: green; text-align: center; margin-top: 10px; display: none;">Profile Saved Successfully!</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>AgriTrace</h3>
+          <p style="color: #a0aec0; line-height: 1.6;" data-lang="foot_desc">Empowering Indian agriculture with technology, transparency, and trust.</p>
+        </div>
+        <div class="footer-col">
+          <h3 data-lang="foot_links">Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="#" onclick="navigateTo('home')" data-lang="nav_home">Home</a></li>
+            <li><a href="#" onclick="navigateTo('tools')" data-lang="nav_tools">Smart Tools</a></li>
+            <li><a href="#" onclick="navigateTo('marketplace')" data-lang="nav_market">Marketplace</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3 data-lang="foot_contact">Contact</h3>
+          <ul class="footer-links">
+            <li>support@agritrace.in</li>
+            <li>+91 1800-123-4567</li>
+            <li>Hyderabad, India</li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        &copy; 2025 AgriTrace. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= AUTH MODAL ================= -->
+  <div id="auth-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <button onclick="closeAuthModal()" style="position: absolute; right: 20px; top: 20px; border: none; font-size: 24px;">&times;</button>
+      <h2 id="auth-title" data-lang="btn_login">Login</h2>
+      <div class="form-group"><input type="text" id="auth-username" class="form-input" placeholder="Username" data-lang-placeholder="ph_user"></div>
+      <div class="form-group"><input type="password" id="auth-password" class="form-input" placeholder="Password" data-lang-placeholder="ph_pass"></div>
+      <button id="auth-submit-btn" class="btn btn-primary" style="width: 100%;" data-lang="btn_login">Login</button>
+      <div style="text-align: center; margin-top: 20px; font-size: 14px;">
+        <a href="#" onclick="toggleAuthMode()" id="auth-toggle-text" data-lang="auth_no_acc">Don't have an account? Sign Up</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= BOT WIDGET ================= -->
+  <button id="bot-toggler" onclick="toggleChat()"><i data-lucide="message-square" size="28"></i></button>
+  <div id="chat-window" class="hidden">
+    <div class="chat-header">
+        <h3>Rythu Mitra AI</h3>
+        <select id="bot-lang-select" style="background:rgba(255,255,255,0.2); border:none; color:white; font-size:12px; border-radius:4px; padding:2px;">
+          <option value="en">English</option>
+          <option value="te">Telugu</option>
+          <option value="hi">Hindi</option>
+          <option value="ta">Tamil</option>
+          <option value="kn">Kannada</option>
+          <option value="ml">Malayalam</option>
+          <option value="mr">Marathi</option>
+          <option value="bn">Bengali</option>
+          <option value="gu">Gujarati</option>
+        </select>
+        <button onclick="toggleChat()" style="background:none;border:none;color:white;"><i data-lucide="x"></i></button>
+    </div>
+    <div class="chat-body" id="chat-messages"><div class="chat-msg bot" data-lang="bot_welcome">Namaskaram! How can I help?</div></div>
+    <div class="chat-footer">
+      <button onclick="toggleMic()" style="background:none;border:none;" id="mic-btn"><i data-lucide="mic"></i></button>
+      <input type="text" class="chat-input" id="chat-input" placeholder="Ask..." data-lang-placeholder="bot_ask" onkeypress="handleEnter(event)">
+      <button onclick="sendMessage()" style="background:var(--primary);color:white;width:36px;height:36px;border-radius:50%;border:none;"><i data-lucide="send" size="18"></i></button>
+    </div>
+  </div>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script>
+    lucide.createIcons();
+    let currentUser = localStorage.getItem('agriUser') || null;
+    let authMode = 'login'; 
+    let currentLang = 'en';
+
+    // --- TRANSLATIONS (COMPREHENSIVE) ---
+    const translations = {
+      en: {
+        nav_home: "Home", nav_tools: "Smart Tools", nav_experts: "Experts", nav_market: "India Market", nav_dash: "Dashboard", nav_profile: "Profile", nav_community: "Community",
+        btn_login: "Login", btn_signup: "Sign Up", btn_logout: "Logout",
+        hero_title: "Future of Farming\nis Here", hero_sub: "Empowering 50,000+ Indian farmers with AI Disease Detection, Smart Market Prices, and Expert Connectivity.",
+        btn_try_tools: "Start Farming Smart", btn_find_expert: "Explore Market",
+        stat_farmers: "Farmers Connected", stat_experts: "Agri Experts", stat_states: "Indian States",
+        why_title: "Why Choose AgriTrace?", why_sub: "Comprehensive tools designed for the modern Indian farmer.",
+        feat_disease: "AI Disease Detection", feat_disease_desc: "Instantly identify crop diseases by uploading a photo and get scientifically proven remedies.",
+        feat_price: "Market Price Prediction", feat_price_desc: "Know the future price of your harvest with our AI forecasting engine tailored for Indian Mandis.",
+        feat_reach: "Pan-India Reach", feat_reach_desc: "From Punjab's Wheat to Kerala's Spices, connect with buyers and sellers across the nation.",
+        how_title: "How AgriTrace Works", how_sub: "Simple steps to transform your farming journey.",
+        step1_title: "Sign Up", step1_desc: "Create your free profile and add your farm details.",
+        step2_title: "Use AI Tools", step2_desc: "Check soil health, detect diseases, and get weather alerts.",
+        step3_title: "Grow & Sell", step3_desc: "Improve yield and sell directly in our marketplace.",
+        dash_loc: "Your Location", dash_hum: "Humidity", dash_rain: "Rain", dash_menu: "Menu", dash_over: "Overview", dash_soil: "Soil Health", dash_batch: "My Batches",
+        dash_farm_over: "Farm Overview", dash_active: "Active Crop", dash_harvest: "Next Harvest", dash_income: "Est. Income",
+        tools_title: "Smart Farming Tools", tools_sub: "Select a tool to begin.", feat_fert: "Fertilizer Calc",
+        experts_desc: "Connect with agriculture scientists.",
+        market_title: "🇮🇳 All India Agriculture Market", filter_state: "Filter by State", filter_crop: "Filter by Crop", btn_apply: "Apply Filters",
+        comm_title: "Farmer Community Network", tab_find: "Find Farmers", tab_forum: "Discussion Forum",
+        search_ph: "Search farmers...", btn_search: "Search", share_ph: "Share a farming tip...", btn_post: "Post Update",
+        prof_verified: "Verified Farmer", prof_name: "Full Name", prof_loc: "Location (State/District)", prof_stats: "My Farm Stats", prof_land: "Total Land (Acres)", prof_crop: "Primary Crop", btn_save: "Save Profile",
+        foot_desc: "Empowering Indian agriculture with technology, transparency, and trust.", foot_links: "Quick Links", foot_contact: "Contact",
+        ph_user: "Username", ph_pass: "Password", auth_no_acc: "Don't have an account? Sign Up", auth_have_acc: "Already have an account? Login",
+        bot_welcome: "Namaskaram! How can I help?", bot_ask: "Ask...",
+        tick_paddy: "AP Paddy", tick_cotton: "Gujarat Cotton", tick_chilli: "Guntur Chilli", tick_apple: "Kashmir Apple", tick_onion: "Nashik Onion", tick_ground: "Rajkot Groundnut",
+        conn_req: "Connection Request Sent to", btn_conn: "Connect +",
+        btn_contact: "Contact Seller"
+      },
+      te: {
+        nav_home: "హోమ్", nav_tools: "స్మార్ట్ టూల్స్", nav_experts: "నిపుణులు", nav_market: "భారత మార్కెట్", nav_dash: "డ్యాష్‌బోర్డ్", nav_profile: "ప్రొఫైల్", nav_community: "సంఘం",
+        btn_login: "లాగిన్", btn_signup: "సైన్ అప్", btn_logout: "లాగౌట్",
+        hero_title: "వ్యవసాయ భవిష్యత్తు\nఇక్కడే ఉంది", hero_sub: "50,000+ మంది రైతులకు AI తెగుళ్ల గుర్తింపు మరియు స్మార్ట్ మార్కెట్ ధరలతో సాధికారత.",
+        btn_try_tools: "స్మార్ట్ వ్యవసాయం ప్రారంభించండి", btn_find_expert: "మార్కెట్‌ని చూడండి",
+        stat_farmers: "రైతులు అనుసంధానించబడ్డారు", stat_experts: "వ్యవసాయ నిపుణులు", stat_states: "భారత రాష్ట్రాలు",
+        why_title: "AgriTrace ఎందుకు ఎంచుకోవాలి?", why_sub: "ఆధునిక భారతీయ రైతు కోసం రూపొందించిన సమగ్ర సాధనాలు.",
+        feat_disease: "AI తెగుళ్ల గుర్తింపు", feat_disease_desc: "ఫోటో అప్‌లోడ్ చేయడం ద్వారా పంట తెగుళ్లను తక్షణమే గుర్తించండి మరియు పరిష్కారాలను పొందండి.",
+        feat_price: "మార్కెట్ ధర అంచనా", feat_price_desc: "భారతీయ మండీల కోసం రూపొందించిన మా AI అంచనాతో మీ పంట భవిష్యత్తు ధరను తెలుసుకోండి.",
+        feat_reach: "పాన్-ఇండియా రీచ్", feat_reach_desc: "పంజాబ్ గోధుమల నుండి కేరళ సుగంధ ద్రవ్యాల వరకు, దేశవ్యాప్తంగా కొనుగోలుదారులు మరియు అమ్మకందారులతో కనెక్ట్ అవ్వండి.",
+        how_title: "AgriTrace ఎలా పనిచేస్తుంది", how_sub: "మీ వ్యవసాయ ప్రయాణాన్ని మార్చడానికి సరళమైన దశలు.",
+        step1_title: "సైన్ అప్", step1_desc: "మీ ఉచిత ప్రొఫైల్‌ను సృష్టించండి మరియు మీ పొలం వివరాలను జోడించండి.",
+        step2_title: "AI టూల్స్ వాడండి", step2_desc: "నేల ఆరోగ్యాన్ని తనిఖీ చేయండి, తెగుళ్లను గుర్తించండి మరియు వాతావరణ హెచ్చరికలను పొందండి.",
+        step3_title: "పండించండి & అమ్మండి", step3_desc: "దిగుబడిని మెరుగుపరచండి మరియు మా మార్కెట్‌ప్లేస్‌లో నేరుగా అమ్మండి.",
+        dash_loc: "మీ ప్రదేశం", dash_hum: "తేమ", dash_rain: "వర్షం", dash_menu: "మెనూ", dash_over: "అవలోకనం", dash_soil: "నేల ఆరోగ్యం", dash_batch: "నా బ్యాచ్‌లు",
+        dash_farm_over: "పొలం అవలోకనం", dash_active: "ప్రస్తుత పంట", dash_harvest: "తదుపరి కోత", dash_income: "అంచనా ఆదాయం",
+        tools_title: "స్మార్ట్ వ్యవసాయ పరికరాలు", tools_sub: "ప్రారంభించడానికి ఒక సాధనాన్ని ఎంచుకోండి.", feat_fert: "ఎరువుల లెక్క",
+        experts_desc: "వ్యవసాయ శాస్త్రవేత్తలతో కనెక్ట్ అవ్వండి.",
+        market_title: "🇮🇳 అఖిల భారత వ్యవసాయ మార్కెట్", filter_state: "రాష్ట్రం వారీగా", filter_crop: "పంట వారీగా", btn_apply: "వర్తించు",
+        comm_title: "రైతు సంఘం నెట్‌వర్క్", tab_find: "రైతులను కనుగొనండి", tab_forum: "చర్చా వేదిక",
+        search_ph: "రైతులను వెతకండి...", btn_search: "వెతకండి", share_ph: "వ్యవసాయ చిట్కాను పంచుకోండి...", btn_post: "పోస్ట్ చేయండి",
+        prof_verified: "ధృవీకరించబడిన రైతు", prof_name: "పూర్తి పేరు", prof_loc: "ప్రాంతం (రాష్ట్రం/జిల్లా)", prof_stats: "నా పొలం వివరాలు", prof_land: "మొత్తం భూమి (ఎకరాలు)", prof_crop: "ప్రధాన పంట", btn_save: "ప్రొఫైల్ సేవ్ చేయండి",
+        foot_desc: "సాంకేతికత, పారదర్శకత మరియు నమ్మకంతో భారతీయ వ్యవసాయాన్ని శక్తివంతం చేయడం.", foot_links: "త్వరిత లింకులు", foot_contact: "సంప్రదించండి",
+        ph_user: "యూజర్ పేరు", ph_pass: "పాస్వర్డ్", auth_no_acc: "ఖాతం లేదా? సైన్ అప్ చేయండి", auth_have_acc: "ఖాతం ఉందా? లాగిన్ చేయండి",
+        bot_welcome: "నమస్కారం! నేను ఎలా సహాయపడగలను?", bot_ask: "అడగండి...",
+        tick_paddy: "ఏపీ వరి", tick_cotton: "గుజరాత్ పత్తి", tick_chilli: "గుంటూరు మిరప", tick_apple: "కాశ్మీర్ యాపిల్", tick_onion: "నాసిక్ ఉల్లి", tick_ground: "రాజ్‌కోట్ వేరుశనగ",
+        conn_req: "కనెక్షన్ అభ్యర్థన పంపబడింది: ", btn_conn: "కనెక్ట్ +",
+        btn_contact: "అమ్మకందారుని సంప్రదించండి"
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'te' : 'en';
+      document.getElementById('lang-btn').innerText = currentLang === 'en' ? '🇺🇸 EN' : '🇮🇳 తెలుగు';
+      
+      // Update InnerText
+      document.querySelectorAll('[data-lang]').forEach(el => {
+        const key = el.getAttribute('data-lang');
+        if (translations[currentLang][key]) {
+          el.innerText = translations[currentLang][key];
+        }
+      });
+
+      // Update Placeholders
+      document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-lang-placeholder');
+        if (translations[currentLang][key]) {
+          el.placeholder = translations[currentLang][key];
+        }
+      });
+
+      // Re-render Dynamic Content (Market & Community) to apply language
+      renderMarket();
+      renderCommunity();
+    }
+
+    // --- MOCK DATA ---
+    const farmerNetwork = [
+      { name: "Ramesh Reddy", loc: "Guntur, AP", crop: "Chilli", img: "https://ui-avatars.com/api/?name=Ramesh+Reddy&background=E91E63&color=fff" },
+      { name: "Suresh Patel", loc: "Rajkot, GJ", crop: "Groundnut", img: "https://ui-avatars.com/api/?name=Suresh+Patel&background=FF9800&color=fff" },
+      { name: "Manpreet Singh", loc: "Ludhiana, PB", crop: "Wheat", img: "https://ui-avatars.com/api/?name=Manpreet+Singh&background=4CAF50&color=fff" },
+      { name: "Anjali Devi", loc: "Warangal, TS", crop: "Cotton", img: "https://ui-avatars.com/api/?name=Anjali+Devi&background=9C27B0&color=fff" }
+    ];
+
+    const forumPosts = [
+      { author: "Ramesh Reddy", time: "2 hrs ago", content: "Does anyone know the best time to sow Chilli for the Rabi season this year given the rains?", likes: 12, comments: 4 },
+      { author: "Manpreet Singh", time: "5 hrs ago", content: "Found a great organic pesticide for stem borer. Message me if you need details.", likes: 24, comments: 8 }
+    ];
+
+    // --- COMMUNITY LOGIC ---
+    function renderCommunity() {
+      // Render Farmers
+      const grid = document.getElementById('farmer-grid-container');
+      grid.innerHTML = '';
+      const connBtnText = translations[currentLang].btn_conn;
+      const alertText = translations[currentLang].conn_req;
+
+      farmerNetwork.forEach(f => {
+        grid.innerHTML += `
+          <div class="farmer-card">
+            <img src="${f.img}" class="farmer-avatar">
+            <div class="farmer-name">${f.name}</div>
+            <div class="farmer-meta"><i data-lucide="map-pin" size="12"></i> ${f.loc} • ${f.crop}</div>
+            <button class="btn btn-outline btn-sm" style="width:100%" onclick="alert('${alertText} ${f.name}!')">${connBtnText}</button>
+          </div>
+        `;
+      });
+
+      // Render Posts (Keeping posts static for now as they are user generated)
+      const feed = document.getElementById('forum-feed-container');
+      feed.innerHTML = '';
+      forumPosts.forEach(p => {
+        feed.innerHTML += `
+          <div class="forum-post">
+            <div class="post-header">
+              <div class="post-author"><div style="width:30px;height:30px;background:#eee;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;">${p.author[0]}</div> ${p.author}</div>
+              <div class="post-time">${p.time}</div>
+            </div>
+            <div class="post-content">${p.content}</div>
+            <div class="post-actions">
+              <span class="action-btn"><i data-lucide="thumbs-up" size="16"></i> ${p.likes} Likes</span>
+              <span class="action-btn"><i data-lucide="message-square" size="16"></i> ${p.comments} Replies</span>
+            </div>
+          </div>
+        `;
+      });
+      lucide.createIcons();
+    }
+
+    function switchCommunityTab(tab) {
+      document.querySelectorAll('.community-tab').forEach(el => el.classList.remove('active'));
+      event.target.classList.add('active');
+      if (tab === 'network') {
+        document.getElementById('tab-network').classList.remove('hidden');
+        document.getElementById('tab-forum').classList.add('hidden');
+      } else {
+        document.getElementById('tab-network').classList.add('hidden');
+        document.getElementById('tab-forum').classList.remove('hidden');
+      }
+    }
+
+    // --- MARKETPLACE DATA ---
+    const marketItems = [
+      { id: 1, name: "Sona Masoori Rice", price: "₹4,200/q", loc: "Guntur, Andhra Pradesh", state: "Andhra Pradesh", crop: "Paddy", icon: "🌾" },
+      { id: 2, name: "Premium Wheat", price: "₹2,350/q", loc: "Ludhiana, Punjab", state: "Punjab", crop: "Wheat", icon: "🍞" },
+      { id: 3, name: "Nagpur Oranges", price: "₹3,500/q", loc: "Nagpur, Maharashtra", state: "Maharashtra", crop: "Fruits", icon: "🍊" },
+      { id: 4, name: "Kashmir Apples", price: "₹8,000/q", loc: "Srinagar, J&K", state: "Kashmir", crop: "Fruits", icon: "🍎" },
+      { id: 5, name: "Teja Chilli", price: "₹18,500/q", loc: "Warangal, Telangana", state: "Telangana", crop: "Spices", icon: "🌶" },
+      { id: 6, name: "Black Pepper", price: "₹32,000/q", loc: "Idukki, Kerala", state: "Kerala", crop: "Spices", icon: "🧂" },
+      { id: 7, name: "Cotton Bales", price: "₹6,400/q", loc: "Adilabad, Telangana", state: "Telangana", crop: "Cotton", icon: "☁️" },
+      { id: 8, name: "Alphonso Mango", price: "₹12,000/q", loc: "Ratnagiri, Maharashtra", state: "Maharashtra", crop: "Fruits", icon: "🥭" },
+    ];
+
+    function renderMarket() {
+      const stateFilter = document.getElementById('market-filter-state').value;
+      const cropFilter = document.getElementById('market-filter-crop').value;
+      const container = document.getElementById('market-grid-container');
+      const contactText = translations[currentLang].btn_contact;
+      
+      container.innerHTML = ''; 
+
+      const filtered = marketItems.filter(item => {
+        return (stateFilter === 'All' || item.state === stateFilter) &&
+               (cropFilter === 'All' || item.crop === cropFilter);
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #666;">No items found.</p>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const html = `
+          <div class="product-card">
+            <div class="product-img" style="font-size: 60px;">${item.icon}</div>
+            <div class="product-details">
+              <h4 style="margin: 0; font-size: 1rem;">${item.name}</h4>
+              <div class="location-tag"><i data-lucide="map-pin" size="12"></i> ${item.loc}</div>
+              <span class="price-tag">${item.price}</span>
+              <button class="btn btn-outline" style="width: 100%; margin-top: 10px; font-size: 14px;" onclick="alert('Contacting...')">${contactText}</button>
+            </div>
+          </div>
+        `;
+        container.innerHTML += html;
+      });
+      lucide.createIcons(); 
+    }
+
+    // --- APP INIT ---
+    function initApp() {
+      if(currentUser) setLoggedInUI(currentUser);
+      else setLoggedOutUI();
+      renderMarket(); 
+      renderCommunity(); 
+    }
+
+    function navigateTo(sectionId) {
+      document.querySelectorAll('section, #section-home').forEach(el => el.classList.add('hidden')); 
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(sectionId === 'home' ? 'section-home' : `section-${sectionId}`);
+      if(target) target.classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+
+    // --- PROFILE LOGIC ---
+    function uploadProfilePic(event) {
+      if (event.target.files && event.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.getElementById('profile-img-display');
+          img.src = e.target.result;
+          img.style.display = 'block';
+          img.nextElementSibling.style.display = 'none'; 
+          
+          const users = JSON.parse(localStorage.getItem('agriUsers') || '[]');
+          const userIdx = users.findIndex(u => u.username === currentUser);
+          if (userIdx !== -1) {
+            users[userIdx].profilePic = e.target.result;
+            localStorage.setItem('agriUsers', JSON.stringify(users));
+          }
+        }
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    }
+
+    document.getElementById('profile-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if(!currentUser) return;
+      const fName = document.getElementById('profile-farmName').value;
+      const loc = document.getElementById('profile-location').value;
+      const acres = document.getElementById('profile-acres').value;
+      
+      document.getElementById('profile-name-header').innerText = fName || currentUser;
+      document.getElementById('profile-loc-header').innerText = loc || 'India';
+
+      await apiCall('/api/profile', { username: currentUser, farmName: fName, location: loc, acres: acres });
+      
+      const msg = document.getElementById('profile-msg');
+      msg.style.display = 'block'; setTimeout(()=>msg.style.display='none', 2000);
+    });
+
+    // --- AUTH LOGIC ---
+    function openAuthModal(mode) { 
+        document.getElementById('auth-modal').classList.remove('hidden'); 
+        authMode = mode; 
+        
+        // Dynamic Text update based on Language
+        const titleKey = mode === 'login' ? 'btn_login' : 'btn_signup';
+        const toggleKey = mode === 'login' ? 'auth_no_acc' : 'auth_have_acc';
+        
+        document.getElementById('auth-title').innerText = translations[currentLang][titleKey];
+        document.getElementById('auth-submit-btn').innerText = translations[currentLang][titleKey];
+        document.getElementById('auth-toggle-text').innerText = translations[currentLang][toggleKey];
+    }
+    function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+    function toggleAuthMode() { openAuthModal(authMode === 'login' ? 'register' : 'login'); }
+    
+    document.getElementById('auth-submit-btn').addEventListener('click', async () => {
+      const u = document.getElementById('auth-username').value;
+      const p = document.getElementById('auth-password').value;
+      if(!u || !p) return;
+      const res = await apiCall(authMode === 'login' ? '/api/login' : '/api/register', { username: u, password: p });
+      if(res.success) {
+        if(authMode === 'register') { alert("Registered!"); openAuthModal('login'); }
+        else { currentUser = res.username; localStorage.setItem('agriUser', currentUser); closeAuthModal(); setLoggedInUI(currentUser); }
+      } else alert(res.message);
+    });
+
+    function logout() { currentUser = null; localStorage.removeItem('agriUser'); setLoggedOutUI(); navigateTo('home'); }
+    
+    function setLoggedInUI(u) { 
+      document.getElementById('auth-actions').style.display = 'none'; 
+      document.getElementById('user-actions').classList.remove('hidden'); 
+      document.getElementById('nav-dashboard').classList.remove('hidden'); 
+      document.getElementById('nav-profile').classList.remove('hidden');
+      
+      const greeting = document.getElementById('user-greeting');
+      if (greeting) greeting.innerText = `Hi, ${u}`;
+
+      const users = JSON.parse(localStorage.getItem('agriUsers') || '[]');
+      const user = users.find(user => user.username === u);
+      
+      const nameDisplay = document.getElementById('profile-name-header');
+      if (nameDisplay) nameDisplay.innerText = u; 
+
+      if(user && user.farmDetails) {
+        if(document.getElementById('profile-farmName')) document.getElementById('profile-farmName').value = user.farmDetails.farmName || '';
+        if(nameDisplay) nameDisplay.innerText = user.farmDetails.farmName || u;
+        if(document.getElementById('profile-location')) document.getElementById('profile-location').value = user.farmDetails.location || '';
+        if(document.getElementById('profile-loc-header')) document.getElementById('profile-loc-header').innerText = user.farmDetails.location || 'India';
+        if(document.getElementById('profile-acres')) document.getElementById('profile-acres').value = user.farmDetails.acres || '';
+      }
+      if(user && user.profilePic) {
+         const img = document.getElementById('profile-img-display');
+         if(img) {
+             img.src = user.profilePic;
+             img.style.display = 'block';
+             img.nextElementSibling.style.display = 'none';
+         }
+      }
+    }
+    
+    function setLoggedOutUI() { 
+      document.getElementById('auth-actions').style.display = 'flex'; 
+      document.getElementById('user-actions').classList.add('hidden'); 
+      document.getElementById('nav-dashboard').classList.add('hidden'); 
+      document.getElementById('nav-profile').classList.add('hidden'); 
+    }
+
+    // --- API MOCK ---
+    async function apiCall(ep, body) {
+      try {
+        if(location.protocol==='blob:'||location.protocol==='file:') throw new Error("Demo");
+        const r = await fetch(ep, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+        return await r.json();
+      } catch(e) { return mockBackend(ep, body); }
+    }
+    
+    async function mockBackend(ep, body) {
+      await new Promise(r=>setTimeout(r,300));
+      const users = JSON.parse(localStorage.getItem('agriUsers')||'[]');
+      if(ep==='/api/login') { const u=users.find(x=>x.username===body.username); return u?{success:true,username:u.username}:{success:false,message:'Invalid'}; }
+      if(ep==='/api/register') { users.push({username:body.username, password:body.password, farmDetails:{}}); localStorage.setItem('agriUsers',JSON.stringify(users)); return {success:true}; }
+      if(ep==='/api/profile') { 
+        const idx = users.findIndex(u => u.username === body.username);
+        if(idx !== -1) {
+            users[idx].farmDetails = { farmName: body.farmName, location: body.location, acres: body.acres };
+            localStorage.setItem('agriUsers', JSON.stringify(users));
+            return {success:true};
+        }
+      }
+      if(ep==='/api/chat') {
+        const lang = body.language || 'en';
+        const q = body.message.toLowerCase();
+        
+        // Simple Dictionary for Demo
+        const responses = {
+            'en': "I am Rythu Mitra. Ask me about crops or weather.",
+            'te': "నమస్కారం! నేను రైతు మిత్ర. పంటలు లేదా వాతావరణం గురించి అడగండి.",
+            'hi': "नमस्ते! मैं रायथु मित्र हूँ। मुझसे फसल या मौसम के बारे में पूछें।",
+            'ta': "வணக்கம்! நான் ரைத்து மித்ரா. பயிர்கள் அல்லது வானிலை பற்றி என்னிடம் கேளுங்கள்.",
+            'kn': "ನಮಸ್ಕಾರ! ನಾನು ರೈತು ಮಿತ್ರ. ಬೆಳೆಗಳು ಅಥವಾ ಹವಾಮಾನದ ಬಗ್ಗೆ ನನ್ನನ್ನು ಕೇಳಿ.",
+            'ml': "നമസ്കാരം! ഞാൻ റൈതു മിത്ര. വിളകളെക്കുറിച്ചോ കാലാവസ്ഥയെക്കുറിച്ചో എന്നോട് ചോദിക്കൂ.",
+            'mr': "नमस्कार! मी रयथू मित्र आहे. मला पिकांबद्दल किंवा हवामानाबद्दल विचारा.",
+            'bn': "হ্যালো! আমি রায়থু মিত্র। আমাকে ফসল বা আবহাওয়া সম্পর্কে জিজ্ঞাসা করুন।",
+            'gu': "નમસ્તે! હું રાયથુ મિત્ર છું. મને પાક અથવા હવામાન વિશે પૂછો."
+        };
+
+        let reply = responses[lang] || responses['en'];
+        
+        return { reply: reply };
+      }
+    }
+
+    // --- CHAT UI ---
+    let isChatOpen = false;
+    let recognition;
+    let isListening = false;
+    const synth = window.speechSynthesis;
+
+    function toggleChat() { document.getElementById('chat-window').classList.toggle('hidden'); }
+    
+    async function sendMessage() {
+      const inp = document.getElementById('chat-input');
+      if(!inp.value.trim()) return;
+      
+      const lang = document.getElementById('bot-lang-select').value;
+      const cont = document.getElementById('chat-messages');
+      
+      cont.innerHTML += `<div class='chat-msg user'>${inp.value}</div>`;
+      
+      // Pass selected language to backend
+      const res = await apiCall('/api/chat', {message:inp.value, language: lang});
+      
+      cont.innerHTML += `<div class='chat-msg bot'>${res.reply}</div>`;
+      inp.value='';
+      
+      // Speak response in selected language
+      const utter = new SpeechSynthesisUtterance(res.reply);
+      utter.lang = lang + '-IN'; 
+      synth.speak(utter);
+    }
+    
+    function handleEnter(e) { if(e.key==='Enter') sendMessage(); }
+
+    // Speech Recognition Setup
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      
+      recognition.onresult = (event) => {
+        const inp = document.getElementById('chat-input');
+        inp.value = event.results[0][0].transcript;
+        sendMessage();
+      };
+      
+      recognition.onend = () => { 
+        isListening = false; 
+        updateMicIcon(); 
+      };
+    }
+
+    function toggleMic() {
+      if (!recognition) return;
+      
+      // Update recognition language based on dropdown
+      const lang = document.getElementById('bot-lang-select').value;
+      recognition.lang = lang + '-IN';
+
+      if (isListening) { 
+        recognition.stop(); 
+        isListening = false; 
+      } else { 
+        recognition.start(); 
+        isListening = true; 
+      }
+      updateMicIcon();
+    }
+
+    function updateMicIcon() {
+      const micBtn = document.getElementById('mic-btn');
+      if (isListening) micBtn.classList.add('mic-listening');
+      else micBtn.classList.remove('mic-listening');
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
